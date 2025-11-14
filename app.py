@@ -1,3 +1,4 @@
+import altair as alt
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -56,10 +57,16 @@ def compute_health_scores(df, weights):
         labels=["Red", "Yellow", "Green"]
     )
 
-    # Renewal horizon (days)
-    today = datetime.today().date()
-    df["Renewal_Date"] = pd.to_datetime(df["Renewal_Date"], errors="coerce").dt.date
-    df["Days_to_Renewal"] = (df["Renewal_Date"] - today).dt.days
+    # Renewal horizon (days) – FIXED
+    # 1) Convert Renewal_Date to proper pandas datetime
+    df["Renewal_Date"] = pd.to_datetime(df["Renewal_Date"], errors="coerce")
+
+    # 2) Use a pandas Timestamp for "today"
+    today_ts = pd.Timestamp.today().normalize()  # midnight today
+
+    # 3) Subtract to get a Timedelta series, THEN use .dt.days
+    df["Days_to_Renewal"] = (df["Renewal_Date"] - today_ts).dt.days
+
 
     return df
 
@@ -98,8 +105,11 @@ def recommended_actions(row):
         actions.append("High adoption: discuss seat expansion or advanced modules.")
 
     # Tickets
-    if row["Tickets_Last_90d"] > row["Tickets_Last_90d"].median():
+       # Tickets – flag high volume based on a simple threshold
+    # You can tune the 40 value based on your data.
+    if row["Tickets_Last_90d"] >= 40:
         actions.append("High support volume: review top ticket themes and propose fixes.")
+
 
     # NPS / CSAT
     if row["NPS"] < 0:
@@ -111,7 +121,8 @@ def recommended_actions(row):
         actions.append("Improve support quality: review SLAs and support playbook.")
 
     # Renewal
-    if row["Days_to_Renewal"] is not None and row["Days_to_Renewal"] <= 120:
+    days = row.get("Days_to_Renewal")
+    if pd.notnull(days) and days <= 120:
         actions.append("Renewal <120 days: lock in mutual success plan and early commit.")
 
     return " • ".join(actions)
@@ -211,21 +222,65 @@ with col4:
 st.markdown("---")
 
 # -----------------------------
-- Charts
+# Charts (Altair with band colors)
 # -----------------------------
 left_col, right_col = st.columns(2)
 
+band_order = ["Green", "Yellow", "Red"]
+band_colors = ["#2ecc71", "#f1c40f", "#e74c3c"]  # green, yellow, red
+
 with left_col:
     st.subheader("Health Band Distribution")
-    band_counts = df["Health_Band"].value_counts().reindex(["Green", "Yellow", "Red"]).fillna(0)
-    st.bar_chart(band_counts)
+    band_counts = (
+        df["Health_Band"]
+        .value_counts()
+        .reindex(band_order)
+        .fillna(0)
+        .reset_index()
+    )
+    band_counts.columns = ["Health_Band", "Count"]
+
+    chart1 = (
+        alt.Chart(band_counts)
+        .mark_bar()
+        .encode(
+            x=alt.X("Health_Band:N", sort=band_order, title="Health Band"),
+            y=alt.Y("Count:Q", title="Number of Accounts"),
+            color=alt.Color(
+                "Health_Band:N",
+                scale=alt.Scale(domain=band_order, range=band_colors),
+                legend=None,
+            ),
+        )
+    )
+    st.altair_chart(chart1, use_container_width=True)
 
 with right_col:
     st.subheader("ARR by Health Band")
-    arr_by_band = df.groupby("Health_Band")["ARR"].sum().reindex(["Green", "Yellow", "Red"]).fillna(0)
-    st.bar_chart(arr_by_band)
+    arr_by_band = (
+        df.groupby("Health_Band")["ARR"]
+        .sum()
+        .reindex(band_order)
+        .fillna(0)
+        .reset_index()
+    )
+    arr_by_band.columns = ["Health_Band", "ARR"]
 
-st.markdown("---")
+    chart2 = (
+        alt.Chart(arr_by_band)
+        .mark_bar()
+        .encode(
+            x=alt.X("Health_Band:N", sort=band_order, title="Health Band"),
+            y=alt.Y("ARR:Q", title="ARR"),
+            color=alt.Color(
+                "Health_Band:N",
+                scale=alt.Scale(domain=band_order, range=band_colors),
+                legend=None,
+            ),
+        )
+    )
+    st.altair_chart(chart2, use_container_width=True)
+
 
 # -----------------------------
 # Detailed table + filters
