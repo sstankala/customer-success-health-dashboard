@@ -1,5 +1,5 @@
 # customer-success-health-dashboard
-A sample dashboard demonstrating key customer success measures
+A practical Customer Success health dashboard I use to prioritize accounts and prep QBRs.
 # Customer Success Health Dashboard
 
 An interactive Streamlit dashboard to help Customer Success teams:
