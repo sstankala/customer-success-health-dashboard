@@ -41,6 +41,7 @@ The app expects these columns in the CSV:
 A sample file is included as **`sample_data.csv`**.
 
 ---
+Disclosure: Used chatgpt to create initial version. Tested and fixed minor defects to make it up and running
 
 ## Getting Started
 
