@@ -1,0 +1,11 @@
+Customer,Segment,ARR,Renewal_Date,NPS,Tickets_Last_90d,CSAT,Logins_Last_30d,Active_Users,Total_Seats
+XYZ-Constructons Corp,Enterprise,450000,2025-03-15,45,38,4.1,520,180,200
+GTMGlobal Inc,Mid-Market,180000,2025-01-20,15,52,3.6,210,70,100
+MaxIT Solutions,SMB,60000,2025-06-10,72,8,4.7,95,18,20
+Demo Analytics,Enterprise,320000,2024-12-01,-10,75,3.2,140,65,120
+TestPublix Retail,Mid-Market,125000,2025-02-05,30,26,3.9,160,40,80
+DeepMind Labs,SMB,40000,2024-11-25,80,3,4.9,60,10,10
+XXBuffett Finance,Enterprise,510000,2025-04-03,55,41,4.3,430,155,190
+ABCBerg Media,Mid-Market,90000,2025-01-05,5,63,3.4,120,25,60
+YourCounty Health,Enterprise,390000,2025-05-18,68,18,4.5,380,140,180
+Sample Logistics,SMB,55000,2024-12-20,22,34,3.8,75,14,25
