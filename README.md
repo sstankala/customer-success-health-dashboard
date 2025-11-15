@@ -1,5 +1,6 @@
 # customer-success-health-dashboard
 A practical Customer Success health dashboard I use to prioritize accounts and prep QBRs.
+- You can try the deployed version at https://sstankala-customer-success-health-dashboard.streamlit.app/
 # Customer Success Health Dashboard
 
 An interactive Streamlit dashboard to help Customer Success teams:
